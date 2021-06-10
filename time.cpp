@@ -1,5 +1,18 @@
 #include <chrono>
 #include <iostream>
+class Ticker{
+public:
+    Ticker(): lastTime_(std::chrono::steady_clock::now()){}
+    void setNow(){ lastTime_ = std::chrono::steady_clock::now(); }
+    std::chrono::milliseconds elapsedTime(){
+        auto now = std::chrono::steady_clock::now();
+        std::chrono::milliseconds ret = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastTime_);
+        lastTime_ = now;
+        return ret;
+    }
+private:
+    decltype(std::chrono::steady_clock::now()) lastTime_;
+};
 
 int main() {
     auto start = std::chrono::steady_clock::now();
