@@ -1,5 +1,9 @@
 #include <chrono>
 #include <iostream>
+#include <sys/syscall.h>
+#include <sys/time.h>
+#include <time.h>
+#include <unistd.h>
 class Ticker {
 public:
     Ticker()
@@ -23,9 +27,14 @@ void printGettimeCost() {
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double, std::milli> elapsed1 = end - start;
     std::cout << "10000 times empty for cost: " << elapsed1.count() << "ms" << std::endl;
+    struct timeval tv;
     start = std::chrono::steady_clock::now();
     for (int i = 0; i < 10000; i++) {
-        auto now = std::chrono::steady_clock::now();
+        // std::chrono::steady_clock::now();
+        // syscall(134);
+        // read(0, 0, 0);
+        // gettimeofday(&tv, nullptr);
+        syscall(96, &tv, nullptr);
     }
     end = std::chrono::steady_clock::now();
     std::chrono::duration<double, std::milli> elapsed2 = end - start;
@@ -35,12 +44,12 @@ void printGettimeCost() {
 
 int main() {
     printGettimeCost();
-    auto start = std::chrono::steady_clock::now();
-    long long num{ (int64_t)10e9 };
-    while (num--)
-        ;
-    auto end = std::chrono::steady_clock::now();
-    std::chrono::duration<double> elapsed = end - start;
-    std::cout << "运行时间: " << elapsed.count() << "s" << std::endl;
+    // auto start = std::chrono::steady_clock::now();
+    // long long num{ (int64_t)10e9 };
+    // while (num--)
+    //     ;
+    // auto end = std::chrono::steady_clock::now();
+    // std::chrono::duration<double> elapsed = end - start;
+    // std::cout << "运行时间: " << elapsed.count() << "s" << std::endl;
     return 0;
 }
