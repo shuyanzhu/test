@@ -4,6 +4,8 @@ project(properties)
 
 add_definitions(-DCMAKE_EXPORT_COMPILE_COMMANDS=ON)
 # 编译器和C++标准
+set(CMAKE_CXX_FLAGS_DEBUG "-O0")
+set(CMAKE_C_FLAGS_DEBUG "-O0")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 # clang++
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -Wl,-rpath,$ENV{HOME}/bin/llvm/lib -Wno-unused-command-line-argument") # clang++, -Wl选项用来比避免lldb-mi找不到链接库
