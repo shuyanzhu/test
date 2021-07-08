@@ -30,11 +30,11 @@ void printGettimeCost() {
     struct timeval tv;
     start = std::chrono::steady_clock::now();
     for (int i = 0; i < 10000; i++) {
-        // std::chrono::steady_clock::now();
-        // syscall(134);
-        // read(0, 0, 0);
-        // gettimeofday(&tv, nullptr);
-        syscall(96, &tv, nullptr);
+        // std::chrono::steady_clock::now(); // gettimeofday
+        // syscall(134); // 1000ns
+        // read(0, 0, 0); // 1000ns
+        // gettimeofday(&tv, nullptr); // vdso, 47ns
+        syscall(96, &tv, nullptr); // 1000ns
     }
     end = std::chrono::steady_clock::now();
     std::chrono::duration<double, std::milli> elapsed2 = end - start;
