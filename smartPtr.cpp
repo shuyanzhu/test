@@ -1,34 +1,32 @@
 #include <iostream>
-#include <vector>
 #include <map>
 #include <memory>
 #include <pthread.h>
 #include <thread>
+#include <vector>
 
 using namespace std;
 
-class TestSharedFromThis : public enable_shared_from_this<TestSharedFromThis>{
+class TestSharedFromThis: public enable_shared_from_this<TestSharedFromThis> {
 public:
-    ~TestSharedFromThis(){
-        cout << "Destory" << endl;
-    }
-    void testFunc(){
+    ~TestSharedFromThis() { cout << "Destory" << endl; }
+    void testFunc() {
         auto self(shared_from_this());
         cout << "Test Func" << endl;
     }
 };
-class Base{
-    public:
+class Base {
+public:
     // virtual ~Base(){ cout << "Base destroy" << endl; }
-    ~Base(){ cout << "Base destroy" << endl; }
+    ~Base() { cout << "Base destroy" << endl; }
     int base_;
 };
-class Derive: public Base{
-    public:
-    ~Derive(){ cout << "Derive destroy" << endl; }
+class Derive: public Base {
+public:
+    ~Derive() { cout << "Derive destroy" << endl; }
     int derive_;
 };
-int main(){
+int main() {
     // shared_ptr<int> smartPtr = make_shared<int>(5);
     // auto test = make_shared<TestSharedFromThis>();
     // test->testFunc();
@@ -37,7 +35,7 @@ int main(){
     unique_ptr<Derive> deirvePtr(new Derive());
     unique_ptr<Derive> uniqueDeivePtr = std::move(deirvePtr);
     // cout << basePtr.use_count() << endl;
-    
+
     return 0;
 }
 // shared_ptr_demo.cpp
@@ -85,7 +83,7 @@ int main(){
 //     std::cout << "Created a shared Derived (as a pointer to Base)\n"
 //               << "  p.get() = " << p.get()
 //               << ", p.use_count() = " << p.use_count() << '\n';
-    
+
 //     // std::thread t1(thr, p), t2(thr, p), t3(thr, p);
 //     p.reset(); // release ownership from main
 //     std::cout << "Shared ownership between 3 threads and released\n"
