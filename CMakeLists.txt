@@ -4,12 +4,33 @@ project(properties)
 
 add_definitions(-DCMAKE_EXPORT_COMPILE_COMMANDS=ON)
 # 编译器和C++标准
-set(CMAKE_CXX_FLAGS_DEBUG "-O0")
-set(CMAKE_C_FLAGS_DEBUG "-O0")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-# clang++
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -Wl,-rpath,$ENV{HOME}/bin/llvm/lib -Wno-unused-command-line-argument") # clang++, -Wl选项用来比避免lldb-mi找不到链接库
-# set(LIBRARIES_TO_LINK "c++abi")
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    # using Clang
+    EXECUTE_PROCESS( COMMAND ${CMAKE_CXX_COMPILER} --version OUTPUT_VARIABLE clang_full_version_string )
+    string (REGEX REPLACE ".*clang version ([0-9]+\\.[0-9]+).*" "\\1" CLANG_VERSION_STRING ${clang_full_version_string})
+    if("${CLANG_VERSION_STRING}" VERSION_GREATER_EQUAL 10 AND "${CLANG_VERSION_STRING}" VERSION_LESS_EQUAL 11)
+        add_definitions(-DUSE_CLANG_EXP)
+    elseif("${CLANG_VERSION_STRING}" VERSION_LESS 10)
+        message(FATAL_ERROR "Using clang version < 10")
+    endif()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -Wl,-rpath,/home/zhm/bin/llvm10/lib -Wno-unused-command-line-argument") # clang++
+#     set(LIBRARIES_TO_LINK "c++abi")
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    # using GCC
+    EXECUTE_PROCESS( COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE GXX_VERSION_STRING)
+    if("${GXX_VERSION_STRING}" VERSION_LESS 10)
+        message(FATAL_ERROR "Using g++ version < 10")
+    elseif("${GXX_VERSION_STRING}" VERSION_EQUAL 10)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcoroutines")
+    endif()
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+    # using Intel C++
+    message(FATAL_ERROR "Not support ICC")
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    # using Visual Studio C++
+    message(FATAL_ERROR "Not support MSVC")
+endif()
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20")
 
 # link_directories(${CMAKE_SOURCE_DIR}/build) # -rpath
 add_executable(properties main.cc Foo.cc)
@@ -30,3 +51,5 @@ add_executable(emplace emplace.cpp)
 add_executable(pod POD.cpp)
 add_executable(storage_duration storage_duration.cpp)
 target_link_libraries(storage_duration pthread)
+add_executable(double_free double_free.cpp)
+add_subdirectory(sync)
