@@ -1,0 +1,1 @@
+add_executable(inline main.cpp a.cpp b.cpp)

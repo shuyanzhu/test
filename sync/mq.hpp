@@ -5,7 +5,7 @@
 
 template <typename T> class MessageQueue: private std::queue<T> {
 public:
-    template <typename... Args> bool enqueue(const Args &...value);
+    template <typename... Args> bool enqueue(Args &&...value);
     bool dequeue(T &data);
 
 private:
@@ -13,10 +13,10 @@ private:
     std::condition_variable condition_;
 };
 
-template <typename T> template <typename... Args> inline bool MessageQueue<T>::enqueue(const Args &...value) {
+template <typename T> template <typename... Args> inline bool MessageQueue<T>::enqueue(Args &&...value) {
     {
         std::unique_lock<std::mutex> lock(mutex_);
-        this->emplace(value...);
+        this->emplace(std::forward(value)...);
     }
     condition_.notify_all();
     return true;
